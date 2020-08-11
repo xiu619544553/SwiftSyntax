@@ -4,7 +4,9 @@
 //
 //  Created by hello on 2020/8/7.
 //  Copyright © 2020 TK. All rights reserved.
-//
+/*
+ 字符串和字符  https://www.cnswift.org/strings-and-characters
+ */
 
 import Foundation
 
@@ -19,5 +21,11 @@ func stringSummary() {
     print(catString)
     
     // UnsafePointer
+    
+    let numbers = [2, 3, 5, 7]
+    var numbersIterator = numbers.makeIterator()
+    while let num = numbersIterator.next() {
+        print(num)
+    }
 }
 
