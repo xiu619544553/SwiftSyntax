@@ -1,6 +1,6 @@
 //
 //  main.swift
-//  class_struct
+//  demo_Class_Struct
 //
 //  Created by hello on 2020/8/7.
 //  Copyright © 2020 TK. All rights reserved.

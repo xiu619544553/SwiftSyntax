@@ -1,6 +1,6 @@
 //
 //  main.swift
-//  demo4_TypeSafety_TypeInference
+//  demo_TypeSafety_TypeInference
 //
 //  Created by hello on 2020/8/7.
 //  Copyright © 2020 TK. All rights reserved.
