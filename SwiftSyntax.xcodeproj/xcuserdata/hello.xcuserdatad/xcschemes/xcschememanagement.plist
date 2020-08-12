@@ -109,6 +109,11 @@
 			<key>orderHint</key>
 			<integer>21</integer>
 		</dict>
+		<key>demo_Property.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>29</integer>
+		</dict>
 		<key>demo_String_Substring.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>

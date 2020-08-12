@@ -4,8 +4,8 @@
 //
 //  Created by hello on 2020/8/12.
 //  Copyright © 2020 TK. All rights reserved.
-//  字符串和字符
-//  https://www.cnswift.org/strings-and-characters
+//  字符串和字符 https://www.cnswift.org/strings-and-characters
+//  Unicode 标量值 (Scalar Value) http://www.unicode.org/versions/Unicode13.0.0/ch03.pdf#G7404
 
 import Foundation
 
@@ -238,6 +238,17 @@ func stringSummary() {
 
 // MARK: Substring
 func substringSummary() {
+    
+    /*
+     与字符串类似，每一个子字符串都有一块内存区域用来保存组成子字符串的字符。字符串与子字符串的不同之处在于，作为性能上的优化，子字符串可以重用一部分用来保存原字符串的内存，或者是用来保存其他子字符串的内存。（字符串也拥有类似的优化，但是如果两个字符串使用相同的内存，他们就是等价的。）这个性能优化意味着在你修改字符串或者子字符串之前都不需要花费拷贝内存的代价。如同上面所说的，子字符串并不适合长期保存——因为它们重用了原字符串的内存，只要这个字符串有子字符串在使用中，那么这个字符串就必须一直保存在内存里。
+
+     在上面的例子中， greeting 是一个字符串，也就是说它拥有一块内存保存着组成这个字符串的字符。由于 beginning 是 greeting 的子字符串，它重用了 greeting 所用的内存。不同的是， newString 是字符串——当它从子字符串创建时，它就有了自己的内存。下面的图例显示了这些关系：
+     
+     
+     注意：
+     String 和 Substring 都遵循 StringProtocol 协议，也就是说它基本上能很方便地兼容所有接受 StringProtocol 值的字符串操作函数。你可以无差别使用 String 或 Substring 值来调用这些函数。
+     */
+    
     print("================Substring================")
     let greeting = "Hi there! It's nice to meet you! 👋"
     let endOfSentence = greeting.firstIndex(of: "!")!
@@ -247,17 +258,84 @@ func substringSummary() {
     let shoutingSentence = firstSentence.uppercased()
     print("shoutingSentence ==\(shoutingSentence)")
     
-    
-    
-    
-    
-    
-    
-    
     print("================String================")
+}
+
+// MARK: 字符串比较
+func compareString() {
+    /*
+     Swift 提供了三种方法来比较文本值：
+     1、字符串和字符相等性
+     2、前缀相等性
+     3、后缀相等性
+     */
+    
+    // 1、字符串和字符相等性  ==  !=
+    
+    let str1 = "string"
+    let str2 = "string"
+    
+    if str1 == str2 {
+        print("字符串 str1 与 str2 内容相同")
+    }
+    
+    if str1 != str2 {
+        print("字符串 str1 与 str2 内容不同")
+    }
+    
+    #warning("注意！！！！！！！")
+    /*
+     两个 String值（或者两个 Character值）如果它们的扩展字形集群是规范化相等，则被认为是相等的。如果扩展字形集群拥有相同的语言意义和外形，我们就说它规范化相等，就算它们实际上是由不同的 Unicode 标量组合而成。
+     比如说， LATIN SMALL LETTER E WITH ACUTE ( U+00E9)是规范化相等于 LATIN SMALL LETTER E( U+0065)加 COMBINING ACUTE ACCENT ( U+0301)的。这两个扩展字形集群都是表示字符é的合法方式，所以它们被看做规范化相等：
+     */
+    let eAcuteQuestion = "Voulez-vous un caf\u{E9}?"
+    let combinedEAcuteQuestion = "Voulez-vous un caf\u{65}\u{301}?"
+    
+    // Voulez-vous un café?
+    print("eAcuteQuestion ==\(eAcuteQuestion)")
+    // Voulez-vous un café?
+    print("combinedEAcuteQuestion ==\(combinedEAcuteQuestion)")
+    
+    // eAcuteQuestion == combinedEAcuteQuestion
+    if eAcuteQuestion == combinedEAcuteQuestion {
+        print("These two strings are considered equal")
+    }
+    
+    
+    // 比较 英语中的A 与 俄语中的 A
+    /*
+     LATIN CAPITAL LETTER A ( U+0041, 或者说 "A")在英语当中是不同于俄语的 CYRILLIC CAPITAL LETTER A ( U+0410,或者说 "А")的。字符看上去差不多，但是它们拥有不同的语言意义
+     */
+    let latinCapitalLetterA: Character = "\u{41}"
+    let cyrillicCapitalLetterA: Character = "\u{0410}"
+    print("latinCapitalLetterA ==\(latinCapitalLetterA)")
+    print("cyrillicCapitalLetterA ==\(cyrillicCapitalLetterA)")
+    
+    if latinCapitalLetterA != cyrillicCapitalLetterA {
+        print("These two characters are not equivalent")
+    }
+    
+    
+    // 2、前缀和后缀相等性  hasPrefix
+    // 3、后缀相等性 hasSuffix
+    /*
+     注意
+
+     如同字符串和字符相等性一节所描述的那样， hasPrefix(_:)和 hasSuffix(_:)方法只对字符串当中的每一个扩展字形集群之间进行了一个逐字符的规范化相等比较。
+     */
+}
+
+
+// MARK: 字符串的 Unicode 表示法
+func unicodeSummary() {
+    
 }
 
 
 stringSummary()
 
 substringSummary()
+
+compareString()
+
+unicodeSummary()

@@ -4,7 +4,7 @@
 //
 //  Created by hello on 2020/8/7.
 //  Copyright © 2020 TK. All rights reserved.
-//
+//  类和结构体 https://www.cnswift.org/classes-and-structures#spl-6
 
 import Foundation
 
