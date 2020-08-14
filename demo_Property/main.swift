@@ -319,12 +319,120 @@ func test1() {
 
 // MARK: 设定包装属性的初始值
 // MARK: 通过属性包装映射值
+#warning("未看明白，有疑惑")
 
 
 // MARK: 全局和局部变量
 // MARK: 类型属性
-// MARK: 类型属性语法
+/*
+ * 属性分为两种
+ * 1、类的实例对象的属性，叫做 实例属性
+ * 2、类本身的属性，叫做 类型属性
+ 
+ 
+ 存储类型属性可以是变量或者常量。计算类型属性总要被声明为变量属性，与计算实例属性一致。
+ 
+ 
+ 注意
+ * 不同于存储实例属性，你必须总是给存储类型属性一个默认值。这是因为类型本身不能拥有能够在初始化时给存储类型属性赋值的初始化器。
+ * 存储类型属性是在它们第一次访问时延迟初始化的。它们保证只会初始化一次，就算被多个线程同时访问，他们也不需要使用 lazy 修饰符标记。
+ */
 
+
+// MARK: 类型属性语法
+/*
+ 在 C 和  Objective-C 中，你使用全局静态变量来定义一个与类型关联的静态常量和变量。在 Swift 中，总之，类型属性是写在类型的定义之中的，在类型的花括号里，并且每一个类型属性都显式地放在它支持的类型范围内。
+ 
+ 使用 static 关键字来声明类型属性。对于类类型的计算类型属性，你可以使用 class 关键字来允许子类重写父类的实现。下面的栗子展示了存储和计算类型属性的语法：
+ */
+struct SomeStructure {
+    // 存储类型 类型属性
+    static var storedTypeProperty = "old value"
+    // 计算类型 类型属性
+    static var computedTypePreperty: Int {
+        return 0
+    }
+}
+
+enum SomeEnumeration {
+    // 存储类型 类型属性
+    static var storedTypeProperty = "old value"
+    // 计算类型 类型属性
+    static var computedTypeProperty: Int {
+        return 0
+    }
+}
+
+// 父类
+class SomeClass {
+    // 存储类型 类型属性
+    static var storedTypeProperty = "old value"
+    
+    
+    // 计算类型 类型属性。子类不能重写。如果允许子类重写，需要添加 class，如下
+    static var computedTypeProperty: Int { // 只读
+        return 0
+    }
+    
+    // 计算类型 类型属性。子类不能重写。如果允许子类重写，需要添加 class，如下
+    static var computedTypeReadWriteProperty: Int { // 可读可写
+        get { return 0 }
+        set { print("computedTypeReadWriteProperty: \(newValue)") }
+    }
+    
+    // class 关键字允许子类重写该类型属性的实现。
+    class var overideableComputedTypeProperty: Int { // 只读
+        return 0
+    }
+    
+    class var overideableReadWriteComputedTypeProperty: Int { // 可读可写
+        get { return 0 }
+        set { print("overideableReadWriteComputedTypeProperty:\(newValue)")}
+    }
+}
+
+// 子类
+class SubSomeClass: SomeClass {
+    // 重写父类 类型属性的实现
+    override class var overideableComputedTypeProperty: Int {
+        return 9
+    }
+}
+
+
+// MARK: 查询和设置类型属性
+func queryAndSetClassProperty() {
+    print("=========查询和设置类型属性=======")
+    
+    print(SomeStructure.storedTypeProperty)
+
+    SomeStructure.storedTypeProperty = "new value"
+    print(SomeStructure.storedTypeProperty)
+    
+    print(SomeClass.overideableReadWriteComputedTypeProperty)
+    SomeClass.overideableReadWriteComputedTypeProperty = 123
+    print("获取计算属性新值: \(SomeClass.overideableReadWriteComputedTypeProperty)")
+    
+    print(SubSomeClass.overideableReadWriteComputedTypeProperty)
+    SubSomeClass.overideableReadWriteComputedTypeProperty = 456
+    print("设置子类计算属性新值: \(SubSomeClass.overideableReadWriteComputedTypeProperty)")
+    
+    print("=========查询和设置类型属性=======\n")
+}
+
+func queryAndSetClassProperty2() {
+    print("=========测试类型属性变化情况=======")
+    
+    // 类存储属性 被其他函数修改了，则后续其他地方调用的值就是最后修改的值
+    print(SomeStructure.storedTypeProperty)
+    print(SomeStructure.storedTypeProperty)
+    
+    // 类计算属性，不受其他函数调用影响
+    print(SomeClass.overideableReadWriteComputedTypeProperty)
+    print(SubSomeClass.overideableReadWriteComputedTypeProperty)
+    
+    print("=========测试类型属性变化情况=======\n")
+}
 
 
 constantSummary()
@@ -334,3 +442,6 @@ calculateProperty()
 readOnlyProperty()
 observerProperty()
 test1()
+
+queryAndSetClassProperty()
+queryAndSetClassProperty2()

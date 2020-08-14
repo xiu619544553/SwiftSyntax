@@ -109,6 +109,11 @@
 			<key>orderHint</key>
 			<integer>8</integer>
 		</dict>
+		<key>demo_Method.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>23</integer>
+		</dict>
 		<key>demo_Optional.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
