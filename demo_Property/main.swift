@@ -319,7 +319,143 @@ func test1() {
 
 // MARK: 设定包装属性的初始值
 // MARK: 通过属性包装映射值
-#warning("未看明白，有疑惑")
+
+@propertyWrapper
+struct TwelveOrLess {
+    var number = 0
+    var wrappedValue: Int {
+        get { return number }
+        set { number = min(newValue, 12) }
+    }
+}
+
+struct SmallRectangle {
+    @TwelveOrLess var height: Int
+    @TwelveOrLess var width: Int
+}
+
+// SmallRectangle 等同于下面的代码，显示地包装了自己的属性
+struct SmallRectangleVisible {
+    
+    // _height 和 _width 属性存储了一个属性包装的实例，TwelveOrLess
+    // 存储属性
+    private var _height = TwelveOrLess()
+    private var _width  = TwelveOrLess()
+    
+    // height 和 width 的 getter 和 setter 包装了 wrappedValue 属性的访问
+    var height: Int {
+        get { return _height.wrappedValue }
+        set { _height.wrappedValue = newValue }
+    }
+    
+    var width: Int {
+        get { return _width.wrappedValue }
+        set { _width.wrappedValue = newValue }
+    }
+}
+
+
+// MARK: 设定包装属性的初始值
+
+@propertyWrapper
+struct SmallNumber {
+    
+    private var max: Int
+    private var number: Int
+    
+    var wrappedValue: Int {
+        get { return number }
+        set { number = min(newValue, max) }
+    }
+    
+    /*
+     SmallNumber 的定义包含了三个初始化器—— init() 、 init(wrappedValue:) 、以及 init(wrappedValue:maximum:) ——也就是下面例子中用来设置包装值和最大值的初始化器。
+     */
+    init() {
+        max = 12
+        number = 0
+    }
+    
+    init(wrappedValue: Int) {
+        max = 12
+        // 报错：'self' used before all stored properties are initialized
+        // 在创建类或结构的实例时，类和结构必须将其所有存储属性设置为适当的初始值
+        // self.wrappedValue = wrappedValue
+        number = min(max, wrappedValue)
+        // 用在这里不会报错：因为 Swift要求：“self”在所有存储属性初始化之前使用
+        self.wrappedValue = wrappedValue
+    }
+    
+    init(wrappedValue: Int, max: Int) {
+        self.max = max
+        number = min(wrappedValue, max)
+    }
+}
+
+struct ZeroRectangle {
+    @SmallNumber var height: Int
+    @SmallNumber var width: Int
+}
+
+// 给定初始化值（一）
+struct UnitRectangle {
+    // 当你在应用了包装的属性上使用 = 1 时，它被翻译成调用 init(wrappedValue:) 初始化器。包装了 height 和 width 的实例 SmallNumber 通过调用 SmallNumber(wrappedValue: 1) 生成。初始化器使用这里指定的包装值，也就是使用默认 12 最大值。
+    @SmallNumber var height: Int = 1
+    @SmallNumber var width: Int = 1
+}
+
+// 给定初始化值（二）
+struct NarrowRectangle {
+    // 当你在自定义特性后的括号中写实际参数时，Swift 使用接受那些实际参数的初始化器来设置包装。比如说，如果你提供初始值和最大值，Swift 使用 init(wrappedValue:maximum:) 初始化器：
+    
+    // 包装了 height 的 SmallNumber 实例通过调用 SmallNumber(wrappedValue: 2, maximum: 5) 生成
+    @SmallNumber(wrappedValue: 2, max: 5) var height: Int
+    // 包装 width 的实例通过调用 SmallNumber(wrappedValue: 3, maximum: 4) 生成
+    @SmallNumber(wrappedValue: 3, max: 6) var width: Int
+    
+    // 上述语法：通过为属性包装添加实际参数，你可以为包装设置初始状态或者在包装创建后传递其他选项。这个语法是使用属性包装最通用的方式。
+}
+
+// 给定初始化值（三）
+struct MixedRectangle {
+    
+    // 包装 height 的 SmallNumber 实例通过调用 SmallNumber(wrappedValue: 1) 生成，它使用默认的最大值 12.包装
+    @SmallNumber var height: Int = 1
+    
+    // 包装 width 的实例通过调用 SmallNumber(wrappedValue: 2, maximum: 9) 生成
+    @SmallNumber(max: 9) var width: Int = 2
+}
+
+
+
+// 测试 属性包装
+func testPropertyWrapper() {
+    print("=========属性包装=======")
+    
+    var rectangle = SmallRectangle()
+    print(rectangle.height)
+    
+    rectangle.height = 10
+    rectangle.width = 20
+    // 10  12
+    print("rectangle.height = \(rectangle.height)...rectangle.width = \(rectangle.width)")
+    
+    rectangle.height = 20
+    // 12  12
+    print("rectangle.height = \(rectangle.height)...rectangle.width = \(rectangle.width)")
+    
+    
+    
+    var zeroRectangle = ZeroRectangle()
+    print("zeroRectangle.height=\(zeroRectangle.height)...zeroRectangle.width=\(zeroRectangle.width)")
+    
+    
+    var unitRectangle = UnitRectangle()
+    print("unitRectangle.height=\(unitRectangle.height)...unitRectangle.width=\(unitRectangle.width)")
+    
+    print("=========属性包装=======\n")
+}
+
 
 
 // MARK: 全局和局部变量
@@ -445,3 +581,5 @@ test1()
 
 queryAndSetClassProperty()
 queryAndSetClassProperty2()
+
+testPropertyWrapper()

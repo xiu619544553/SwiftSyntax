@@ -47,13 +47,33 @@ class Counter {
 }
 
 
-// MARK: 在实例方法中修改值类型
+// MARK: 在实例方法中修改值类型 - 异变
 
 struct Point {
     var x = 0.0, y = 0.0
-    func moveBy(x deltaX: Double, y deltaY: Double) {
-        
+//    func moveBy1(x deltaX: Double, y deltaY: Double) {
+//        // 报错：Left side of mutating operator isn't mutable: 'self' is immutable左边的变化操作符是不可变的:'self'是不可变的
+//        x += deltaX
+//    }
+    
+    mutating func moveBy(x deltaX: Double, y deltaY: Double) {
+        x += deltaX
+        y += deltaY
     }
+}
+
+func testMutatingMethod() {
+    
+    // 变量结构体
+    var point = Point(x: 10.0, y: 10.0)
+    point.moveBy(x: 20.0, y: 20.0)
+    print("x: \(point.x)；y: \(point.y)")
+    
+    // 常量结构体
+//    let constantPoint = Point(x: 20.0, y: 20.0)
+    // 不能再常量结构体里调用异变方法，因为自身属性不能被改变，就算它们是变量属性：
+//    constantPoint.moveBy(x: 5.0, y: 5.0)
+//    print("x: \(point.x)；y: \(point.y)")
 }
 
 // 用 struct 定义资料物件型别
@@ -62,3 +82,85 @@ struct Cat {
 }
 
 
+// MARK: 在异变方法里指定自身
+
+// 同结构体 Point
+struct MutatingPoint {
+    var x = 0.0, y = 0.0
+    mutating func moveBy(x deltaX: Double, y deltaY: Double) {
+        // 异变方法可以指定整个实例给隐含的 self属性
+        self = MutatingPoint(x: x + deltaX, y: y + deltaY)
+    }
+}
+
+// MARK: 枚举异变 - 枚举的异变方法可以设置隐含的 self属性为相同枚举里的不同成员：
+enum TriStateSwitch {
+    case off, low, high
+    
+    mutating func next() {
+        switch self {
+        case .off:
+            self = .low
+            
+        case .low:
+            self = .high
+            
+        case .high:
+            self = .off
+        }
+    }
+}
+
+// 枚举异变测试
+func testEnumMutating() {
+    
+    var light = TriStateSwitch.low
+    
+    light.next()
+    print(light)
+    
+    light.next()
+    print(light)
+}
+
+
+
+// MARK: 类型方法
+/*
+ 类型方法的两种实现方法
+ 1、在 func关键字之前使用 static关键字来明确一个类型方法。子类不可重写。
+ 2、使用 class关键字来允许子类重写父类对类型方法的实现。
+ */
+
+class SomeClass {
+    
+    // class 类型方法，子类可重写。
+    class func aboutClassMethod() {
+        print("class --> 类型方法")
+        print(self)
+        // 类型方法的函数体中，隐含的 self属性指向了类本身而不是这个类的实例。对于结构体和枚举，这意味着你可以使用 self来消除类型属性和类型方法形式参数之间的歧义，用法和实例属性与实例方法形式参数之间的用法完全相同。
+    }
+    
+    // static 类型方法，子类不可重写。
+    static func aboutStaticMethod() {
+        print("static --> 类型方法")
+    }
+}
+
+class SomeSubClass: SomeClass {
+    
+    override class func aboutClassMethod() {
+        
+    }
+}
+
+
+
+
+
+
+// 测试异变关键字
+testMutatingMethod()
+
+// 枚举异变测试
+testEnumMutating()
