@@ -427,6 +427,28 @@ struct MixedRectangle {
 }
 
 
+// MARK: 通过属性包装映射
+@propertyWrapper
+struct SmallNumberMap {
+    var number = 0
+    var projectedValue = false
+    var wrappedValue: Int {
+        get { return number }
+        set {
+            if newValue > 12 {
+                number = 12
+                projectedValue = true
+            } else {
+                number = newValue
+                projectedValue = false
+            }
+        }
+    }
+}
+
+struct SomeStructureMap {
+    @SmallNumberMap var someNumber: Int
+}
 
 // 测试 属性包装
 func testPropertyWrapper() {
@@ -452,6 +474,16 @@ func testPropertyWrapper() {
     
     var unitRectangle = UnitRectangle()
     print("unitRectangle.height=\(unitRectangle.height)...unitRectangle.width=\(unitRectangle.width)")
+    
+    
+    // 测试属性包装映射值
+    
+    var someStructure = SomeStructureMap()
+    someStructure.someNumber = 4
+    print("SomeStructure.$someNumber = \(someStructure.$someNumber)")
+    
+    someStructure.someNumber = 13
+    print("SomeStructure.$someNumber = \(someStructure.$someNumber)")
     
     print("=========属性包装=======\n")
 }
